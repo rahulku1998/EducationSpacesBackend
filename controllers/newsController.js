@@ -51,6 +51,57 @@ exports.getNewsById = async (req, res) => {
 };
 
 
+exports.getNewsPreview = async (req, res) => {
+  try {
+    const news = await News.findById(req.params.id);
+
+    if (!news) {
+      return res.status(404).send("News not found");
+    }
+
+    const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <title>${news.title}</title>
+
+        <!-- Open Graph Tags -->
+        <meta property="og:title" content="${news.title}" />
+        <meta property="og:description" content="${news.summary}" />
+        <meta property="og:image" content="${news.photo}" />
+        <meta property="og:url" content="https://educationspaces.in/news/${news._id}" />
+        <meta property="og:type" content="article" />
+
+        <!-- Optional (better preview) -->
+        <meta name="twitter:card" content="summary_large_image" />
+      </head>
+
+      <body>
+        <script>
+          // redirect to frontend
+          window.location.href = "https://educationspaces.in/news/${news._id}";
+        </script>
+      </body>
+    </html>
+    `;
+
+    res.send(html);
+
+  } catch (error) {
+    console.error("Preview Error:", error);
+    res.status(500).send("Server Error");
+  }
+};
+
+
+
+
+
+
+
+
+
 // ===============================
 // CREATE NEWS
 // ===============================

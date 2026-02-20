@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const {getNewsPreview}=require("../controllers/newsController");
 
 const {
   getAllNews,
@@ -19,7 +20,12 @@ const { isAdmin } = require("../middlewares/adminMiddleware");
 
 // Anyone can view news
 router.get("/", getAllNews);
+
+
+router.get("/preview/:id", getNewsPreview);
+
 router.get("/:id", getNewsById);
+
 
 
 // ===============================
