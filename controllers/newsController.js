@@ -59,40 +59,58 @@ exports.getNewsPreview = async (req, res) => {
       return res.status(404).send("News not found");
     }
 
-    const html = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <title>${news.title}</title>
+    const newsUrl = `https://educationspaces.in/news/${news._id}`;
 
-        <!-- Open Graph Tags -->
-        <meta property="og:title" content="${news.title}" />
-        <meta property="og:description" content="${news.summary}" />
-        <meta property="og:image" content="${news.photo}" />
-        <meta property="og:url" content="https://educationspaces.in/news/${news._id}" />
-        <meta property="og:type" content="article" />
+    // Helper — title/summary mein quotes hone se HTML break na ho
+    const esc = (str = "") =>
+      str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
 
-        <!-- Optional (better preview) -->
-        <meta name="twitter:card" content="summary_large_image" />
-      </head>
+    const html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
-      <body>
-        <script>
-          // redirect to frontend
-          window.location.href = "https://educationspaces.in/news/${news._id}";
-        </script>
-      </body>
-    </html>
-    `;
+    <!-- ✅ FIX: meta refresh — JS nahi chalata crawler, ye chalata hai -->
+    <meta http-equiv="refresh" content="0; url=${newsUrl}" />
 
-    res.send(html);
+    <title>${esc(news.title)}</title>
+
+    <!-- ✅ Open Graph — WhatsApp, Facebook, LinkedIn preview -->
+    <meta property="og:title"       content="${esc(news.title)}" />
+    <meta property="og:description" content="${esc(news.summary)}" />
+    <meta property="og:image"       content="${esc(news.photo)}" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url"         content="${newsUrl}" />
+    <meta property="og:type"        content="article" />
+    <meta property="og:site_name"   content="Education Spaces" />
+
+    <!-- ✅ Twitter / X card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="${esc(news.title)}" />
+    <meta name="twitter:description" content="${esc(news.summary)}" />
+    <meta name="twitter:image"       content="${esc(news.photo)}" />
+  </head>
+  <body>
+    <p>Redirecting... <a href="${newsUrl}">Click here if not redirected</a></p>
+    <!-- ❌ window.location.href HATA DIYA — crawler JS nahi chalata -->
+  </body>
+</html>`;
+
+    res.setHeader("Content-Type", "text/html");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.status(200).send(html);
 
   } catch (error) {
     console.error("Preview Error:", error);
     res.status(500).send("Server Error");
   }
 };
+
 
 
 
