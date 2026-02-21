@@ -9,7 +9,13 @@ connectDB();
 const app = express();
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || origin === process.env.CLIENT_URL) {
+    const allowedOrigins = [
+      process.env.CLIENT_URL,
+      "https://educationspaces.in",
+      "https://www.educationspaces.in",
+    ];
+    // ✅ No origin = direct browser/curl/crawler request — allow karo
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
