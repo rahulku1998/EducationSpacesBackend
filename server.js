@@ -23,7 +23,9 @@ app.use(cors({
   },
   credentials: true
 }));
+
 app.use(express.json());
+
 
 app.use("/api/news", require("./routes/newsRoutes"));
 app.use("/api/results", require("./routes/resultRoutes"));

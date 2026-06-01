@@ -3,7 +3,7 @@ const WhatsNew = require("../models/whatsNew");
 // GET all WhatsNew items
 exports.getAllWhatsNew = async (req, res) => {
   try {
-    const items = await WhatsNew.find().select("title link createdAt");
+    const items = await WhatsNew.find().sort({ createdAt: -1 }).select("title link createdAt");
     res.json(items);
   } catch (err) {
     console.error(err);
